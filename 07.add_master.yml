@@ -1,0 +1,25 @@
+# 部署Master2节点并加入K8S集群
+- hosts: deploy
+  roles:
+  - add-master/del_cert
+
+- hosts: master2
+  roles:
+  - add-master/send_cert_admin
+  - cluster/certificate
+  - add-master/fetch_cert
+  - cluster/send_cert
+  - add-master/join_master
+
+# 部署Master3节点并加入K8S集群
+- hosts: deploy
+  roles:
+  - add-master/del_cert
+
+- hosts: master3
+  roles:
+  - add-master/send_cert_admin
+  - cluster/certificate
+  - add-master/fetch_cert
+  - cluster/send_cert
+  - add-master/join_master
