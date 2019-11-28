@@ -502,7 +502,7 @@ spec:
   # We recommend using Typha if you have more than 50 nodes.  Above 100 nodes it is essential
   # (when using the Kubernetes datastore).  Use one replica for every 100-200 nodes.  In
   # production, we recommend running at least 3 replicas to reduce the impact of rolling upgrade.
-  replicas: {% if (groups['master1'] + groups['master2'] + groups['master3'] + groups['k8s-worker']) | unique | length > 1 %}2{% else %}1{% endif %}
+  replicas: {% if (groups['k8s-master'] + groups['k8s-worker']) | unique | length > 1 %}2{% else %}1{% endif %}
 
   revisionHistoryLimit: 2
   selector:
