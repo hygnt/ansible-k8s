@@ -1,0 +1,3 @@
+- name: Clean All Temporary Files And Directory For All K8S Nodes
+  shell: rm -rf /etc/kubernetes/*.yaml /etc/kubernetes/metrics-server /etc/kubernetes/nginx-ingress && \
+         rm -rf /tmp/*

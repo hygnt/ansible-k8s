@@ -1,0 +1,5 @@
+- name: Restart Kubelet Service On The Master1 Node
+  systemd:
+    daemon_reload: yes
+    name: kubelet
+    state: restarted

@@ -1,0 +1,17 @@
+- name: Copy CA Key To All Etcd Nodes
+  copy:
+    src: /tmp/k8s-cert/ca.pem
+    dest: /etc/kubernetes/pki/etcd
+  when: ca_key.stat.isreg is not defined
+
+- name: Copy Etcd Key To All Etcd Nodes
+  copy:
+    src: /tmp/k8s-cert/etcd-key.pem
+    dest: /etc/kubernetes/pki/etcd
+  when: etcd_key.stat.isreg is not defined
+
+- name: Copy Etcd Cert To All Etcd Nodes
+  copy:
+    src: /tmp/k8s-cert/etcd.pem
+    dest: /etc/kubernetes/pki/etcd
+  when: etcd_cert.stat.isreg is not defined

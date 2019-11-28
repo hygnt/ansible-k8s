@@ -1,0 +1,12 @@
+- name: Fetch K8S Certificates From The Master Node
+  fetch:
+    src: /tmp/k8s-cert/{{ item }}
+    dest: /tmp/k8s-cert/
+    flat: yes
+  with_items:
+  - apiserver.pem
+  - apiserver-key.pem
+  - apiserver-kubelet-client.pem
+  - apiserver-kubelet-client-key.pem
+  - front-proxy-client.pem
+  - front-proxy-client-key.pem

@@ -1,0 +1,19 @@
+- name: Send CoreDNS Yaml Template To The Master Node
+  template:
+    src: coredns.yaml.j2
+    dest: /etc/kubernetes/coredns.yaml
+
+- name: Delete CoreDNS Deployment From The K8S Cluster
+  shell: kubectl delete -n kube-system deployment coredns
+  ignore_errors: True
+
+- name: Deployment High Availability CoreDNS For The K8S Cluster
+  shell: kubectl apply -f /etc/kubernetes/coredns.yaml
+
+- name: 轮询等待 CoreDNS Pod 运行
+  shell: kubectl get pod --all-namespaces -o wide | grep 'coredns' | awk '{print $4}'
+  register: pod_status
+  until: "'Running' in pod_status.stdout"
+  retries: 12
+  delay: 5
+  ignore_errors: True
