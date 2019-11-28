@@ -1,0 +1,11 @@
+- hosts: etcd
+  roles:
+  - etcd/certificate
+
+- hosts: master1
+  roles:
+  - etcd/fetch_cert
+
+- hosts: etcd
+  roles:
+  - etcd/install
