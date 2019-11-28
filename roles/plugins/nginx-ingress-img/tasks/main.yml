@@ -1,0 +1,12 @@
+- name: Check The Nginx Ingress Controller Image Whether Exist For All Master Nodes
+  shell: docker images|grep 'nginx-ingress' || echo 'not exist'
+  register: nginx_ingress_img
+
+- name: Pull Nginx Ingress Controller Image If Image Not Exist For All Master Nodes
+  shell: docker pull {{ k8s_img_repo }}/nginx-ingress-controller:{{ nginx_ing_ctrl_ver }}
+  when: '"nginx-ingress" not in nginx_ingress_img.stdout'
+
+- name: Wait For 8 Seconds And Continue With Next
+  wait_for:
+    timeout: 8
+  delegate_to: localhost

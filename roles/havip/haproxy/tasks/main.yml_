@@ -1,0 +1,62 @@
+- name: Check The HAproxy Config File Whether Exist
+  stat:
+    path: /etc/haproxy/haproxy.cfg
+  register: haproxy_cfg
+
+- name: Create A Directory For The HAproxy Profile If It Dose Not Exist
+  file:
+    path: "{{ haproxy_dir }}"
+    state: directory
+    mode: '0755'
+  when: haproxy_cfg.stat.isreg is not defined
+
+- name: Install Configuration File For HAproxy
+  template: src=haproxy.cfg.j2 dest={{ haproxy_dir }}/haproxy.cfg
+  when: haproxy_cfg.stat.isreg is not defined
+
+- name: Check The HAproxy Image Whether Exist
+  shell: docker images|grep haproxy || echo 'not exist'
+  register: haproxy_img_is_exist
+
+- name: Pull The HAproxy Image
+  shell: docker pull {{ haproxy_ver }}
+  when: '"haproxy" not in haproxy_img_is_exist.stdout'
+
+- name: Check The Keepalived Image Whether Exist
+  shell: docker images|grep keepalived || echo 'not exist'
+  register: keepalived_img_is_exist
+
+- name: Pull The Keepalived Image
+  shell: docker pull {{ keepalived_ver }}
+  when: '"keepalived" not in keepalived_img_is_exist.stdout'
+
+- name: Check The k8s-haproxy Container Whether Exist
+  shell: docker ps|grep -w "k8s-haproxy" || echo 'not running'
+  register: haproxy_container_is_running
+
+- name: Run A Container From The HAproxy Image
+  shell: docker run -d --name k8s-haproxy \
+        -v {{ haproxy_dir }}:/usr/local/{{ haproxy_dir }}:ro \
+        -p 8443:8443 -p 1080:1080 --restart always \
+        {{ haproxy_ver }}
+  when: '"k8s-haproxy" not in haproxy_container_is_running.stdout'
+
+- name: Sleep For 7 Seconds And Continue With Play
+  wait_for:
+    timeout: 7
+  delegate_to: localhost
+
+- name: Check The k8s-keepalived Container Whether Exist
+  shell: docker ps|grep -w "k8s-keepalived" || echo 'not runngin'
+  register: keepalived_container_is_running
+
+- name: Run A Container From The Keepalived Image
+  shell: docker run --net=host --cap-add=NET_ADMIN \
+         -e KEEPALIVED_INTERFACE={{ net_if }} \
+         -e KEEPALIVED_VIRTUAL_IPS="#PYTHON2BASH:['{{ vip }}']" \
+         -e KEEPALIVED_UNICAST_PEERS="#PYTHON2BASH:['{{ master1_ip }}','{{ master2_ip }}','{{ master3_ip }}']" \
+         -e KEEPALIVED_PASSWORD=hello \
+         --name k8s-keepalived \
+         --restart always \
+         -d {{ keepalived_ver }}
+  when: '"k8s-keepalived" not in keepalived_container_is_running.stdout'

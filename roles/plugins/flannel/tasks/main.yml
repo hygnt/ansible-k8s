@@ -1,0 +1,15 @@
+- name: Send Flannel Yaml File To The Master Node
+  copy:
+    src: kube-flannel.yml
+    dest: /etc/kubernetes/kube-flannel.yaml
+
+- name: Install Flannel Network Plugin For The K8S Cluster
+  shell: kubectl apply -f /etc/kubernetes/kube-flannel.yaml
+
+- name: 轮询等待 Flannel Pod 运行
+  shell: kubectl get pod --all-namespaces | grep 'flannel-ds' | awk '{print $4}'
+  register: pod_status
+  until: "'Running' in pod_status.stdout"
+  retries: 12
+  delay: 5
+  ignore_errors: True

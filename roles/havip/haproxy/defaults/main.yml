@@ -1,0 +1,2 @@
+haproxy_ver: haproxy:2.0.0
+haproxy_dir: /etc/haproxy

@@ -1,0 +1,11 @@
+- name: Delete K8S Certificates From Deploy Host Tmp Directory
+  file:
+    path: /tmp/k8s-cert/{{ item }}
+    state: absent
+  with_items:
+  - apiserver.pem
+  - apiserver-key.pem
+  - apiserver-kubelet-client.pem
+  - apiserver-kubelet-client-key.pem
+  - front-proxy-client.pem
+  - front-proxy-client-key.pem

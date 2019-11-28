@@ -1,0 +1,48 @@
+- name: Copy Json Config Templates To The Master Tmp Directory
+  template: src={{ item }}.j2 dest=/tmp/k8s-cert/{{ item }}
+  with_items:
+  - apiserver-csr.json
+  - front-proxy-ca-csr.json
+  - front-proxy-client-csr.json
+  - kubelet-csr.json
+
+- name: Check The Apiserver Cert Whether Exist In The Master Tmp Directory
+  shell: ls /tmp/k8s-cert|grep apiserver.pem || echo 'not found'
+  register: apiserver_pem_is_exist
+
+- name: Generate K8S Apiserver Certificates In The Master Tmp Directory
+  shell: cfssl gencert -ca=/tmp/k8s-cert/ca.pem -ca-key=/tmp/k8s-cert/ca-key.pem \
+         -config=/tmp/k8s-cert/ca-config.json \
+         -hostname=127.0.0.1,{{ host_ip }},10.96.0.1,{{ ansible_hostname }},kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster,kubernetes.default.svc.cluster.local \
+         -profile=kubernetes /tmp/k8s-cert/apiserver-csr.json | cfssljson -bare /tmp/k8s-cert/apiserver && \
+         cfssl gencert -ca=/tmp/k8s-cert/ca.pem -ca-key=/tmp/k8s-cert/ca-key.pem \
+         -config=/tmp/k8s-cert/ca-config.json \
+         -profile=kubernetes /tmp/k8s-cert/kubelet-csr.json | cfssljson -bare /tmp/k8s-cert/apiserver-kubelet-client
+  when: '"apiserver.pem" not in apiserver_pem_is_exist.stdout'
+
+- name: Check The Front-Proxy Cert Whether Exist In The Master Tmp Directory
+  shell: ls /tmp/k8s-cert|grep front-proxy-ca.pem || echo 'not found'
+  register: front_proxy_ca_pem_is_exist
+
+- name: Generate K8S Front-Proxy Certificates In The Master Tmp Directory
+  shell: cfssl gencert -initca /tmp/k8s-cert/front-proxy-ca-csr.json | cfssljson -bare /tmp/k8s-cert/front-proxy-ca
+  when: '"front-proxy-ca.pem" not in front_proxy_ca_pem_is_exist.stdout'
+
+- name: Check The Front-Proxy-Client Cert Whether Exist In The Master Tmp Directory
+  shell: ls /tmp/k8s-cert|grep front-proxy-client.pem || echo 'not found'
+  register: front_proxy_client_pem_is_exist
+
+- name: Generate K8S Front-Proxy-Client Certificates In The Master Tmp Directory
+  shell: cfssl gencert -ca=/tmp/k8s-cert/front-proxy-ca.pem -ca-key=/tmp/k8s-cert/front-proxy-ca-key.pem \
+         -config=/tmp/k8s-cert/ca-config.json \
+         -profile=kubernetes /tmp/k8s-cert/front-proxy-client-csr.json | cfssljson -bare /tmp/k8s-cert/front-proxy-client
+  when: '"front-proxy-client.pem" not in front_proxy_client_pem_is_exist.stdout'
+
+- name: Check The K8S Service Account Key Whether Exist In The Master Tmp Directory
+  shell: ls /tmp/k8s-cert|grep sa.key || echo 'not found'
+  register: sa_key_is_exist
+
+- name: Generate K8S Service Account Key In The Master Tmp Directory
+  shell: openssl genrsa -out /tmp/k8s-cert/sa.key 2048 && \
+         openssl rsa -in /tmp/k8s-cert/sa.key -pubout -out /tmp/k8s-cert/sa.pub
+  when: '"sa.key" not in sa_key_is_exist.stdout'

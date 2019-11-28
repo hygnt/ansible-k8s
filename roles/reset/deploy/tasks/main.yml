@@ -1,0 +1,5 @@
+- name: Delete Temporary Directory On The Deploy Host
+  file:
+    path: /tmp/k8s-cert
+    state: absent
+  ignore_errors: True

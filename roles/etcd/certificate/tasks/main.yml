@@ -1,0 +1,29 @@
+- name: Copy cfssl Tools To All Etcd Nodes
+  copy: src={{ item }} dest=/usr/bin/{{ item }} mode=0755
+  with_items:
+  - cfssl
+  - cfssljson
+  - cfssl-certinfo
+
+- name: Create The Temporary Directory On All Etcd Nodes
+  file:
+    path: /tmp/k8s-cert
+    state: directory
+    mode: '0755'
+
+- name: Copy Json Config Templates To All K8S Temporary Directory
+  template: src={{ item }}.j2 dest=/tmp/k8s-cert/{{ item }}
+  with_items:
+  - ca-config.json
+  - ca-csr.json
+  - etcd-csr.json
+
+- name: Check The Etcd Cert Whether Exist In All K8S Temporary Directory
+  shell: ls /tmp/k8s-cert|grep etcd.pem || echo 'not found'
+  register: etcd_pem_is_exist
+
+- name: Generate Etcd Key And Certificate In All K8S Temporary Directory
+  shell: cfssl gencert -initca /tmp/k8s-cert/ca-csr.json | cfssljson -bare /tmp/k8s-cert/ca && \
+         cfssl gencert -ca=/tmp/k8s-cert/ca.pem -ca-key=/tmp/k8s-cert/ca-key.pem -config=/tmp/k8s-cert/ca-config.json \
+         -profile=kubernetes /tmp/k8s-cert/etcd-csr.json | cfssljson -bare /tmp/k8s-cert/etcd
+  when: '"etcd.pem" not in etcd_pem_is_exist.stdout'

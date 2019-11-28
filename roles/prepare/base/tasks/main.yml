@@ -1,0 +1,79 @@
+- name: Config Host-File For K8S Cluster Nodes
+  lineinfile:
+    path: /etc/hosts
+    regexp:
+    insertafter:
+    line: "{{ item }}"
+  with_items:
+  - 192.168.9.136  k8s-master1
+  - 192.168.9.137  k8s-master2
+  - 192.168.9.138  k8s-master3
+  - 192.168.9.151  k8s-worker1
+  - 192.168.9.152  k8s-worker2
+  - 192.168.9.153  k8s-worker3
+
+- name: Ensure SELinux Is Set To Disabled Mode For All K8S Nodes
+  lineinfile:
+    path: /etc/selinux/config
+    regexp: '^SELINUX='
+    line: SELINUX=disabled
+
+- name: Modify Fstab File For Swap For All K8S Nodes
+  lineinfile:
+    path: /etc/fstab
+    regexp: '/dev/mapper/centos-swap'
+    line: '#/dev/mapper/centos-swap swap                    swap    defaults        0 0'
+
+- name: Copy Aliyun Repository Files To K8S Cluster Nodes
+  copy: src={{ item }} dest=/etc/yum.repos.d/{{ item }}
+  with_items:
+  - Centos-7.repo
+  - epel-7.repo
+  - docker-ce.repo
+  - kubernetes.repo
+
+- name: Config Kernel For K8S Cluster Nodes
+  copy: src=k8s.conf dest=/etc/sysctl.d/k8s.conf
+
+- name: Enable IPVS Module For K8S Cluster Nodes
+  copy: src=ipvs.modules dest=/etc/sysconfig/modules/ipvs.modules mode=0755
+
+- name: Change Hostname For K8S Cluster Nodes
+  hostname: name={{ hostname }}
+
+- name: Disable Firewall Service For All K8S Nodes
+  systemd:
+    name: firewalld
+    enabled: no
+    state: stopped
+
+- name: Disable SELinux And Swap Partition For All K8S Nodes
+  shell: setenforce 0 || /bin/true && swapoff -a
+  ignore_errors: True
+
+- name: Install Base Software Package For All K8S Nodes
+  yum:
+    name:
+    - net-tools
+    - initscripts
+    - vim-enhanced
+    - bash-completion
+    - ntpdate
+    - wget
+    - git
+    - iproute
+    - rsync
+    - lrzsz
+    - screen
+    - iproute
+    - device-mapper-persistent-data
+    - lvm2
+    - socat
+    - conntrack-tools
+    - cri-tools
+    - libnetfilter_cthelper
+    - libnetfilter_cttimeout
+    - libnetfilter_queue
+    state: latest
+    update_cache: yes
+  ignore_errors: True

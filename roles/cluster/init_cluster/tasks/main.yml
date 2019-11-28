@@ -1,0 +1,56 @@
+- name: Include Download Kubernetes Images Task List
+  include_tasks: dlimg.yml
+
+- name: Check The K8S Cluster Whether Exist On The Master1 Node
+  stat:
+    path: /etc/kubernetes/manifests/kube-apiserver.yaml
+  register: kube_apiserver_yml
+
+- name: Initial K8S Cluster On The Master1 Node
+  shell: kubeadm init --config=/etc/kubernetes/kubeadm-config.yaml
+  when: kube_apiserver_yml.stat.isreg is not defined
+
+- name: Check The K8S Cluster Admin Config File Whether Exist On The Master1 Node
+  stat:
+    path: /root/.kube/config
+  register: kube_admin_cfg
+
+- name: Create Manage Permission For K8S Cluster On The Master1 Node
+  shell: mkdir -p $HOME/.kube && \
+         cp -i /etc/kubernetes/admin.conf $HOME/.kube/config && \
+         chown $(id -u):$(id -g) $HOME/.kube/config
+  when: kube_admin_cfg.stat.isreg is not defined
+
+#- name: Modify Monitor Address For The K8S Cluster On The Master1 Node
+#  lineinfile:
+#    path: /etc/kubernetes/manifests/{{ item }}
+#    regexp: '    - --bind-address='
+#    line: '    - --bind-address=0.0.0.0'
+#  with_items:
+#  - kube-scheduler.yaml
+#  - kube-controller-manager.yaml
+#  notify:
+#  - Restart Kubelet Service On The Master1 Node
+
+- name: Fetch The K8S Cluster Admin Config File On The Master1 Node
+  fetch:
+    src: '{{ item }}'
+    dest: /tmp/k8s-cert/
+    flat: yes
+  with_items:
+  - /etc/kubernetes/admin.conf
+
+- name: Create Kubeadm Token For Join K8S Cluster On The Master1 Node
+  shell: kubeadm token create --print-join-command
+  register: join_token
+
+- name: Send The Join-Node Script Template To The Master1 Node
+  template:
+    src: join_node.sh.j2
+    dest: /tmp/k8s-cert/join_node.sh
+
+- name: Fetch The Join-Node Script From The Master1 Node
+  fetch:
+    src: /tmp/k8s-cert/join_node.sh
+    dest: /tmp/k8s-cert/
+    flat: yes

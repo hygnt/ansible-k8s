@@ -1,0 +1,23 @@
+- name: Send K8S Dashboard RBAC File To The Master1 Node
+  copy:
+    src: k8s-dashboard-rbac-admin.yaml
+    dest: /etc/kubernetes/k8s-dashboard-rbac-admin.yaml
+
+- name: Apply K8S Dashboard RBAC For The K8S Cluster
+  shell: kubectl apply -f /etc/kubernetes/k8s-dashboard-rbac-admin.yaml
+
+- name: Check The K8S Dashboard Pod Whether Exist For The K8S Cluster
+  shell: kubectl get pod --all-namespaces -o wide | grep 'kubernetes-dashboard' | awk '{print $4}'
+  register: dashboard_pod_statu
+
+- name: Deployment K8S Dashboard For The K8S Cluster
+  shell: kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta6/aio/deploy/recommended.yaml
+  when: '"Running" not in dashboard_pod_statu.stdout'
+
+- name: 轮询等待 Kubernetes-Dashboard Pod 运行
+  shell: kubectl get pod --all-namespaces -o wide | grep 'kubernetes-dashboard' | awk '{print $4}'
+  register: pod_status
+  until: "'Running' in pod_status.stdout"
+  retries: 12
+  delay: 5
+  ignore_errors: True

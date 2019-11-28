@@ -1,0 +1,34 @@
+- name: Check The HAproxy Config File Whether Exist On All Master Nodes
+  stat:
+    path: /etc/haproxy/haproxy.cfg
+  register: haproxy_cfg
+
+- name: Create The HAproxy Profile Directory On All Master Nodes
+  file:
+    path: "{{ haproxy_dir }}"
+    state: directory
+    mode: '0755'
+  when: haproxy_cfg.stat.isreg is not defined
+
+- name: Install HAproxy Configuration File On All Master Nodes
+  template: src=haproxy.cfg.j2 dest={{ haproxy_dir }}/haproxy.cfg
+  when: haproxy_cfg.stat.isreg is not defined
+
+- name: Check The HAproxy Image Whether Exist On All Master Nodes
+  shell: docker images|grep haproxy || echo 'not exist'
+  register: haproxy_img_is_exist
+
+- name: Pull The HAproxy Image On All Master Nodes
+  shell: docker pull {{ haproxy_ver }}
+  when: '"haproxy" not in haproxy_img_is_exist.stdout'
+
+- name: Check The k8s-haproxy Container Whether Exist On All Master Nodes
+  shell: docker ps|grep -w "k8s-haproxy" || echo 'not running'
+  register: haproxy_container_is_running
+
+- name: Run A HAproxy Container From The HAproxy Image On All Master Nodes
+  shell: docker run -d --name k8s-haproxy \
+        -v {{ haproxy_dir }}:/usr/local/{{ haproxy_dir }}:ro \
+        -p 8443:8443 -p 1080:1080 --restart always \
+        {{ haproxy_ver }}
+  when: '"k8s-haproxy" not in haproxy_container_is_running.stdout'
