@@ -6,7 +6,7 @@
   - prepare/kubernetes
 
 # 部署K8S集群高可用VIP
-- hosts: k8s-master:children
+- hosts: k8s-master
   roles:
   - havip/haproxy
 
@@ -83,7 +83,7 @@
   - plugins/k8s-dashboard
   - plugins/metrics-server
 
-- hosts: k8s-master:children
+- hosts: k8s-master
   roles:
   - plugins/nginx-ingress-img
 
