@@ -1,0 +1,15 @@
+- hosts: k8s-master:children
+  roles:
+  - reset/master
+
+- hosts: k8s-worker
+  roles:
+  - reset/worker
+
+- hosts: deploy
+  roles:
+  - reset/deploy
+
+- hosts: k8s-node
+  roles:
+  - reset/reboot
