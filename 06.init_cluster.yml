@@ -1,0 +1,7 @@
+# 部署Master1节点并初始化K8S集群
+- hosts: master1
+  roles:
+  - cluster/certificate
+  - cluster/fetch_cert
+  - cluster/send_cert
+  - cluster/init_cluster
