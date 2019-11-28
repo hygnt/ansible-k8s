@@ -1,0 +1,92 @@
+# 部署K8S所有节点准备环境和所需的软件
+- hosts: k8s-node
+  roles:
+  - prepare/base
+  - prepare/docker
+  - prepare/kubernetes
+
+# 部署K8S集群高可用VIP
+- hosts: k8s-master:children
+  roles:
+  - havip/haproxy
+
+- hosts: master1
+  roles:
+  - havip/vip
+
+- hosts:
+  - master2
+  - master3
+  roles:
+  - havip/vip
+
+# 部署ETCD集群
+- hosts: etcd
+  roles:
+  - etcd/certificate
+
+- hosts: master1
+  roles:
+  - etcd/fetch_cert
+
+- hosts: etcd
+  roles:
+  - etcd/install
+
+# 部署Master1节点并初始化K8S集群
+- hosts: master1
+  roles:
+  - cluster/certificate
+  - cluster/fetch_cert
+  - cluster/send_cert
+  - cluster/init_cluster
+
+# 部署Master2节点并加入K8S集群
+- hosts: deploy
+  roles:
+  - add-master/del_cert
+
+- hosts: master2
+  roles:
+  - add-master/send_cert_admin
+  - cluster/certificate
+  - add-master/fetch_cert
+  - cluster/send_cert
+  - add-master/join_master
+
+# 部署Master3节点并加入K8S集群
+- hosts: deploy
+  roles:
+  - add-master/del_cert
+
+- hosts: master3
+  roles:
+  - add-master/send_cert_admin
+  - cluster/certificate
+  - add-master/fetch_cert
+  - cluster/send_cert
+  - add-master/join_master
+
+# 部署K8S加入Worker工作节点
+- hosts: k8s-worker
+  roles:
+  - worker
+
+# 部署K8S安装Calico、Metric、Dashboard和Nginx-Ingress等相关插件
+- hosts: k8s-node
+  roles:
+  - plugins/calico-img
+
+- hosts: master1
+  roles:
+  - plugins/calico
+  - plugins/k8s-dashboard
+  - plugins/metrics-server
+
+- hosts: k8s-master:children
+  roles:
+  - plugins/nginx-ingress-img
+
+- hosts: master1
+  roles:
+  - plugins/nginx-ingress
