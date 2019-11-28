@@ -1,0 +1,21 @@
+- name: Check The Docker Service For All K8S Nodes
+  shell: systemctl status docker|grep running||echo 'not running'
+  register: docker_is_running
+
+- name: Install Docker Package For K8S Cluste Nodes
+  yum:
+    name:
+    - docker-ce-{{ docker_ver }}
+    - docker-ce-cli-{{ docker_ver }}
+    - containerd.io
+    state: present
+  when: '"active" not in docker_is_running.stdout'
+
+- name: Start Docker Service For All K8S Nodes
+  service: name=docker enabled=yes state=started
+
+- name: Install Docker Configuration File For All K8S Nodes
+  copy: src=daemon.json dest=/etc/docker/daemon.json
+  tags: daemon
+  notify:
+  - Restart System Daemon And Docker Service

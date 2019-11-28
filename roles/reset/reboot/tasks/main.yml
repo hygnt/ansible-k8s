@@ -1,0 +1,3 @@
+- name: Reboot All The K8S Cluster Nodes
+  reboot:
+    connect_timeout:

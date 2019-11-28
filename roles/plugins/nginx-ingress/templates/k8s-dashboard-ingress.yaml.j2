@@ -1,0 +1,25 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: dashboard-ingress
+  namespace: kubernetes-dashboard
+  annotations:
+    # 如果通过HTTP访问，跳转到HTTPS
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    # 指定转发协议为HTTPS，因为Ingress默认转发协议是HTTP，而kubernetes-dashboard默认是HTTPS
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  # 使用指定的Secret
+  tls:
+   - secretName: {{ secret_name }}
+  rules:
+  # 指定访问Dashboard的域名
+  - host: {{ domain_name }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: kubernetes-dashboard
+          servicePort: 443

@@ -1,0 +1,62 @@
+#- name: Check The K8S CA Cert Whether Exist On Other Master Node
+#  stat:
+#    path: /etc/kubernetes/pki/ca.crt
+#  register: ca_cert
+
+- name: Copy K8S CA Cert And Key To Other Master Node
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    force: yes
+  with_items:
+  - { src: '/tmp/k8s-cert/ca.pem', dest: '/etc/kubernetes/pki/ca.crt' }
+  - { src: '/tmp/k8s-cert/ca-key.pem', dest: '/etc/kubernetes/pki/ca.key' }
+  - { src: '/tmp/k8s-cert/ca.pem', dest: '/tmp/k8s-cert/ca.pem' }
+  - { src: '/tmp/k8s-cert/ca-key.pem', dest: '/tmp/k8s-cert/ca-key.pem' }
+#  when: ca_cert.stat.isreg is not defined
+
+#- name: Check The K8S Front Proxy Cert Whether Exist On Other Master Node
+#  stat:
+#    path: /etc/kubernetes/pki/front-proxy-ca.crt
+#  register: front_proxy_cert
+
+- name: Copy K8S Front-Proxy Cert And Key To Other Master Node
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    force: yes
+  with_items:
+  - { src: '/tmp/k8s-cert/front-proxy-ca.pem', dest: '/etc/kubernetes/pki/front-proxy-ca.crt' }
+  - { src: '/tmp/k8s-cert/front-proxy-ca-key.pem', dest: '/etc/kubernetes/pki/front-proxy-ca.key' }
+  - { src: '/tmp/k8s-cert/front-proxy-ca.pem', dest: '/tmp/k8s-cert/front-proxy-ca.pem' }
+  - { src: '/tmp/k8s-cert/front-proxy-ca-key.pem', dest: '/tmp/k8s-cert/front-proxy-ca-key.pem' }
+#  when: front_proxy_cert.stat.isreg is not defined
+
+#- name: Check The K8S Service Account Key Whether Exist On Other Master Node
+#  stat:
+#    path: /etc/kubernetes/pki/sa.key
+#  register: sa_key
+
+- name: Copy K8S Service Account Key To Other Master Node
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    force: yes
+  with_items:
+  - { src: '/tmp/k8s-cert/sa.key', dest: '/etc/kubernetes/pki/sa.key' }
+  - { src: '/tmp/k8s-cert/sa.pub', dest: '/etc/kubernetes/pki/sa.pub' }
+  - { src: '/tmp/k8s-cert/sa.key', dest: '/tmp/k8s-cert/sa.key' }
+  - { src: '/tmp/k8s-cert/sa.pub', dest: '/tmp/k8s-cert/sa.pub' }
+#  when: sa_key.stat.isreg is not defined
+
+- name: Check The K8S Cluster Admin Config File Whether Exist On Other Master Node
+  stat:
+    path: /etc/kubernetes/admin.conf
+  register: k8s_admin_conf
+
+- name: Send The K8S Cluster Admin Config File To Other Master Node
+  copy:
+    src: /tmp/k8s-cert/admin.conf
+    dest: /etc/kubernetes/admin.conf
+    mode: '0600'
+  when: k8s_admin_conf.stat.isreg is not defined

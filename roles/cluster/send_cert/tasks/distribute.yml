@@ -1,0 +1,46 @@
+- name: Copy K8S CA Cert And Key To The Master Node
+  copy:
+    src: /tmp/k8s-cert/{{ item.src }}
+    dest: /etc/kubernetes/pki/{{ item.dest }}
+  with_items:
+  - { src: 'ca.pem', dest: 'ca.crt' }
+  - { src: 'ca-key.pem', dest: 'ca.key' }
+  when: ca_cert.stat.isreg is not defined
+
+- name: Copy K8S Apiserver Cert And Key To The Master Node
+  copy:
+    src: /tmp/k8s-cert/{{ item.src }}
+    dest: /etc/kubernetes/pki/{{ item.dest }}
+  with_items:
+  - { src: 'apiserver.pem', dest: 'apiserver.crt' }
+  - { src: 'apiserver-key.pem', dest: 'apiserver.key' }
+  - { src: 'apiserver-kubelet-client.pem', dest: 'apiserver-kubelet-client.crt' }
+  - { src: 'apiserver-kubelet-client-key.pem', dest: 'apiserver-kubelet-client.key'}
+  when: apiserver_cert.stat.isreg is not defined
+
+- name: Copy K8S Front-Proxy Cert And Key To The Master Node
+  copy:
+    src: /tmp/k8s-cert/{{ item.src }}
+    dest: /etc/kubernetes/pki/{{ item.dest }}
+  with_items:
+  - { src: 'front-proxy-ca.pem', dest: 'front-proxy-ca.crt' }
+  - { src: 'front-proxy-ca-key.pem', dest: 'front-proxy-ca.key' }
+  when: front_proxy_cert.stat.isreg is not defined
+
+- name: Copy K8S Front-Proxy-Client Cert And Key To The Master Node
+  copy:
+    src: /tmp/k8s-cert/{{ item.src }}
+    dest: /etc/kubernetes/pki/{{ item.dest }}
+  with_items:
+  - { src: 'front-proxy-client.pem', dest: 'front-proxy-client.crt' }
+  - { src: 'front-proxy-client-key.pem', dest: 'front-proxy-client.key' }
+  when: front_proxy_client_cert.stat.isreg is not defined
+
+- name: Copy K8S Service Account Key To The Master Node
+  copy:
+    src: /tmp/k8s-cert/{{ item }}
+    dest: /etc/kubernetes/pki/{{ item }}
+  with_items:
+  - sa.key
+  - sa.pub
+  when: sa_key.stat.isreg is not defined

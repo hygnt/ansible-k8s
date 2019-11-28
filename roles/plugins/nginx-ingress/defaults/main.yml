@@ -1,0 +1,11 @@
+nginx_ing_ctrl_ver: 0.26.1
+
+master1: k8s-master1
+
+master2: k8s-master2
+
+master3: k8s-master3
+
+domain_name: k8s-web.ui
+
+secret_name: k8s-ui-secret

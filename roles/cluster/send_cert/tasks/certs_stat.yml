@@ -1,0 +1,24 @@
+- name: Check The K8S CA Cert Whether Exist On The Master Node
+  stat:
+    path: /etc/kubernetes/pki/ca.crt
+  register: ca_cert
+
+- name: Check The K8S Apiserver Cert Whether Exist On The Master Node
+  stat:
+    path: /etc/kubernetes/pki/apiserver.crt
+  register: apiserver_cert
+
+- name: Check The K8S Front-Proxy Cert Whether Exist On The Master Node
+  stat:
+    path: /etc/kubernetes/pki/front-proxy-ca.crt
+  register: front_proxy_cert
+
+- name: Check The K8S Front-Proxy-Client Cert Whether Exist On The Master Node
+  stat:
+    path: /etc/kubernetes/pki/front-proxy-client.crt
+  register: front_proxy_client_cert
+
+- name: Check The K8S Service Account Key Whether Exist On The Master Node
+  stat:
+    path: /etc/kubernetes/pki/sa.key
+  register: sa_key

@@ -1,0 +1,9 @@
+- name: Fetch Etcd Certificate From Master1 Node
+  fetch:
+    src: /tmp/k8s-cert/{{ item }}
+    dest: /tmp/k8s-cert/
+    flat: yes
+  with_items:
+  - ca.pem
+  - etcd.pem
+  - etcd-key.pem

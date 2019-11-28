@@ -1,0 +1,14 @@
+- name: Check The CA Key Whether Exist On All Etcd Nodes
+  stat:
+    path: /etc/kubernetes/pki/etcd/ca.pem
+  register: ca_key
+
+- name: Check The Etcd Key Whether Exist On All Etcd Nodes
+  stat:
+    path: /etc/kubernetes/pki/etcd/etcd-key.pem
+  register: etcd_key
+
+- name: Check The Etcd Cert Whether Exist On All Etcd Nodes
+  stat:
+    path: /etc/kubernetes/pki/etcd/etcd.pem
+  register: etcd_cert

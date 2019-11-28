@@ -1,0 +1,11 @@
+#!/bin/bash
+#Auto Judge Node And Join K8S Cluster
+echo $HOSTNAME|grep master >/dev/null
+if [ $? -eq 0 ];then
+	{{ join_token.stdout }} --control-plane
+else
+	echo $HOSTNAME|grep worker >/dev/null
+	if [ $? -eq 0 ];then
+		{{ join_token.stdout }}
+	fi
+fi

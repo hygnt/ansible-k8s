@@ -1,0 +1,24 @@
+- name: Send K8S Dashboard Ingress Config Templates To The Master1 Node
+  template:
+    src: k8s-dashboard-ingress.yaml.j2
+    dest: /etc/kubernetes/nginx-ingress/k8s-dashboard-ingress.yaml
+
+- name: Check The Secret Name Whether Exist For K8S Dashboard Ingress
+  shell: kubectl -n kube-system get secret|grep '{{ secret_name }}' || echo 'not exist'
+  register: ui_secret_name
+
+- name: Create Secret Certificate For K8S Dashboard Ingress
+  shell: openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/kubernetes/nginx-ingress/tls.key \
+         -out /etc/kubernetes/nginx-ingress/tls.crt -subj "/CN={{ domain_name }}" && \
+         kubectl -n kube-system create secret tls {{ secret_name }} --key=/etc/kubernetes/nginx-ingress/tls.key --cert=/etc/kubernetes/nginx-ingress/tls.crt
+  ignore_errors: True
+  when: "'{{ secret_name }}' not in ui_secret_name.stdout"
+
+- name: Check K8S Dashboard Ingress Whether Exist In Ther K8S Cluster
+  shell: kubectl get ingress --all-namespaces|grep 'dashboard-ingress' || echo 'not exist'
+  register: dashboard_ingress
+
+- name: Apply K8S Dashboard Ingress For The K8S Cluster
+  shell: kubectl apply -f /etc/kubernetes/nginx-ingress/k8s-dashboard-ingress.yaml
+  ignore_errors: True
+  when: '"dashboard-ingress" not in dashboard_ingress.stdout'
