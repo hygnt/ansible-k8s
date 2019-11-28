@@ -1,4 +1,4 @@
-项目：使用Ansible Playbook部署安装Kubernetes高可用集群
+项目：使用Ansible Playbook部署安装Kubernetes高可用集群，Node节点以及相关组件如下
 
 Master节点：k8s-master1、k8s-master2、k8s-master3
 
