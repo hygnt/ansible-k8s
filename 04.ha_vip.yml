@@ -1,0 +1,13 @@
+- hosts: k8s-master:children
+  roles:
+  - havip/haproxy
+
+- hosts: master1
+  roles:
+  - havip/vip
+
+- hosts:
+  - master2
+  - master3
+  roles:
+  - havip/vip
