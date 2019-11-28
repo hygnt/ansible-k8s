@@ -1,0 +1,22 @@
+- name: Check The Keepalived Image Whether Exist On All Master Nodes
+  shell: docker images|grep keepalived || echo 'not exist'
+  register: keepalived_img_is_exist
+
+- name: Pull The Keepalived Image On All Master Nodes
+  shell: docker pull {{ keepalived_ver }}
+  when: '"keepalived" not in keepalived_img_is_exist.stdout'
+
+- name: Check The k8s-keepalived Container Whether Exist On All Master Nodes
+  shell: docker ps|grep -w "k8s-keepalived" || echo 'not runngin'
+  register: keepalived_container_is_running
+
+- name: Run A Keepalived Container From The Keepalived Image On All Master Nodes
+  shell: docker run --net=host --cap-add=NET_ADMIN \
+         -e KEEPALIVED_INTERFACE={{ net_if }} \
+         -e KEEPALIVED_VIRTUAL_IPS="#PYTHON2BASH:['{{ vip }}']" \
+         -e KEEPALIVED_UNICAST_PEERS="#PYTHON2BASH:['{{ master1_ip }}','{{ master2_ip }}','{{ master3_ip }}']" \
+         -e KEEPALIVED_PASSWORD=hello \
+         --name k8s-keepalived \
+         --restart always \
+         -d {{ keepalived_ver }}
+  when: '"k8s-keepalived" not in keepalived_container_is_running.stdout'

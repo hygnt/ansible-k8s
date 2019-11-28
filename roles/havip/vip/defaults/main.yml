@@ -1,0 +1,2 @@
+keepalived_ver: osixia/keepalived:1.4.5
+net_if: ens192

@@ -1,0 +1,45 @@
+#- name: Query Docker Cgroup Driver Value
+#  shell: docker info|grep 'Cgroup Driver'|awk '{print $3}'
+#  register: docker_cgroup_driver
+
+- name: Copy Kubeadm Config Template To The Other Master Node
+  template: src=kubeadm-config.yaml.j2 dest=/etc/kubernetes/kubeadm-config.yaml
+
+- name: Pull Kubernetes Images By The Kubeadm Config File On The Other Master Node
+  shell: kubeadm config images pull --config=/etc/kubernetes/kubeadm-config.yaml
+
+- name: Send The Join-Node Script File To The Other Master Node
+  copy:
+    src: /tmp/k8s-cert/join_node.sh
+    dest: /tmp/k8s-cert/join_node.sh
+
+- name: Check The K8S Cluster Whether Exist On The Other Master Node
+  stat:
+    path: /etc/kubernetes/manifests/kube-apiserver.yaml
+  register: kube_apiserver_yml
+
+- name: Join Master If The K8S Cluster Not Exist On The Other Master Node
+  shell: sh /tmp/k8s-cert/join_node.sh
+  when: kube_apiserver_yml.stat.isreg is not defined
+
+- name: Check The K8S Cluster Admin Config File Whether Exist On The Other Master Node
+  stat:
+    path: /root/.kube/config
+  register: kube_admin_cfg
+
+- name: Create Manage Permission For K8S Cluster On The Other Master Node
+  shell: mkdir -p $HOME/.kube && \
+         cp -i /etc/kubernetes/admin.conf $HOME/.kube/config && \
+         chown $(id -u):$(id -g) $HOME/.kube/config
+  when: kube_admin_cfg.stat.isreg is not defined
+
+#- name: Modify Monitor Address For The K8S Cluster On The Other Master Node
+#  lineinfile:
+#    path: /etc/kubernetes/manifests/{{ item }}
+#    regexp: '    - --bind-address='
+#    line: '    - --bind-address=0.0.0.0'
+#  with_items:
+#  - kube-scheduler.yaml
+#  - kube-controller-manager.yaml
+#  notify:
+#  - Restart Kubelet Service On The Other Master Node

@@ -1,0 +1,5 @@
+- name: Include Check Certificates Task List
+  include_tasks: certs_stat.yml
+
+- name: Include Distribute Certificates Task List
+  include_tasks: distribute.yml

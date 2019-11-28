@@ -1,0 +1,47 @@
+- name: Create The Nginx-Ingress Directory On The Master1 Node
+  file:
+    path: /etc/kubernetes/nginx-ingress
+    state: directory
+    mode: '0755'
+
+- name: Send Nginx-Ingress Config Templates To The Master1 Node
+  template: src={{ item }}.j2 dest=/etc/kubernetes/nginx-ingress/{{ item }}
+  with_items:
+  - namespace.yaml
+  - default-backend.yaml
+  - configmap.yaml
+  - rbac.yaml
+  - nginx-ingress-controller.yaml
+
+- name: Wait 15 Seconds For Kube-ApiServer Port 6443 To Become Open
+  wait_for:
+    timeout: 15
+    port: 6443
+    host: '{{ vip }}'
+    delay: 13
+  connection: local
+
+- name: Check The Nginx-Ingress-Controller Pods Whether Exist For The K8S Cluster
+  shell: kubectl get pod --all-namespaces | grep 'nginx-ingress' || echo 'not exist'
+  register: nginx_ing_ctrl_pod
+
+- name: Deployment Nginx-Ingress-Controller For The K8S Cluster
+  shell: kubectl apply -f /etc/kubernetes/nginx-ingress/{{ item }}
+  with_items:
+  - namespace.yaml
+  - default-backend.yaml
+  - configmap.yaml
+  - rbac.yaml
+  - nginx-ingress-controller.yaml
+  when: '"nginx-ingress" not in nginx_ing_ctrl_pod.stdout'
+
+- name: 轮询等待 Nginx-Ingress-Controller Pod 运行
+  shell: kubectl get pod --all-namespaces | grep 'nginx-ingress' | awk '{print $4}'
+  register: pod_status
+  until: "'Running' in pod_status.stdout"
+  retries: 16
+  delay: 5
+  ignore_errors: True
+
+- name: Include Apply K8S Dashboard Ingress Task List
+  include_tasks: dashboard_ingress.yml

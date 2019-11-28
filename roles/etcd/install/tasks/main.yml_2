@@ -1,0 +1,39 @@
+- name: Create Directory On All Etcd Nodes
+  file:
+    path: /etc/kubernetes/pki/etcd
+    state: directory
+    mode: '0755'
+
+- name: Include Check Certificates Task List
+  include_tasks: certs_stat.yml
+
+- name: Include Distribute Certificates Task List
+  include_tasks: distribute.yml
+
+- name: Include Check And Pull Etcd Image Task List
+  include_tasks: etcd_image.yml
+
+- name: Check The Etcd Container Whether Exist On All Etcd Nodes
+  shell: docker ps|grep -w "etcd"||echo 'not running'
+  register: etcd_container_is_running
+
+- name: Run An Etcd Container From Etcd Image On All Etcd Nodes
+  shell: docker run -d --privileged -p 2379:2379 -p 2380:2380 \
+         --volume=/var/lib/etcd:/etcd-data --volume=/etc/kubernetes/pki/etcd:/etc/etcd/ssl \
+         --restart=always --name etcd {{ k8s_img_repo }}/etcd:{{ etcd_ver }} \
+         /usr/local/bin/etcd \
+         --client-cert-auth --peer-client-cert-auth \
+         --cert-file=/etc/etcd/ssl/etcd.pem \
+         --key-file=/etc/etcd/ssl/etcd-key.pem \
+         --peer-cert-file=/etc/etcd/ssl/etcd.pem \
+         --peer-key-file=/etc/etcd/ssl/etcd-key.pem \
+         --trusted-ca-file=/etc/etcd/ssl/ca.pem \
+         --peer-trusted-ca-file=/etc/etcd/ssl/ca.pem \
+         --data-dir=/etcd-data --name {{ etcd_name }} \
+         --initial-advertise-peer-urls https://{{ ip_add }}:2380 --listen-peer-urls https://0.0.0.0:2380 \
+         --advertise-client-urls https://{{ ip_add }}:2379 --listen-client-urls https://0.0.0.0:2379 \
+         --initial-cluster etcd1=https://{{ master1_ip }}:2380,etcd2=https://{{ master2_ip }}:2380,etcd3=https://{{ master3_ip }}:2380 \
+         --initial-cluster-state new --initial-cluster-token etcd-cluster --snapshot-count 10000 \
+         --auto-compaction-mode periodic --auto-compaction-retention 1 --max-request-bytes 16777216 --quota-backend-bytes 8589934592 \
+         --heartbeat-interval 6000 --election-timeout 30000
+  when: '"etcd" not in etcd_container_is_running.stdout'

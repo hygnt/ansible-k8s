@@ -1,0 +1,5 @@
+- name: Reset And Clean All Masters For The K8S Cluster
+  shell: kubeadm reset -f && docker rm -f etcd k8s-keepalived k8s-haproxy && rm -rf /var/lib/etcd && \
+         rm -rf $HOME/.kube && rm -rf /etc/haproxy /tmp/* && rm -f /etc/kubernetes/*.yaml && \
+         rm -rf /etc/kubernetes/metrics-server /etc/kubernetes/nginx-ingress
+  ignore_errors: True

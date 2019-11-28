@@ -1,0 +1,7 @@
+- name: Check The Etcd Image Whether Exist On All Etcd Nodes
+  shell: docker images|grep 'etcd' ||echo 'not exist'
+  register: etcd_img_exist
+
+- name: Pull The Etcd Image On All Etcd Nodes
+  shell: docker pull {{ k8s_img_repo }}/etcd:{{ etcd_ver }}
+  when: '"etcd" not in etcd_img_exist.stdout'

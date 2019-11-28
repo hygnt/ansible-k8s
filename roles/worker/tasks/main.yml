@@ -1,0 +1,21 @@
+- name: Check The Kube-Proxy Image Whether Exist On All Worker Nodes
+  shell: docker images|grep 'kube-proxy' || echo 'not exist'
+  register: kube_proxy_img
+
+- name: Pull Kube-Proxy Image If Image Not Exist On All Worker Nodes
+  shell: docker pull {{ k8s_img_repo }}/kube-proxy:v{{ kube_ver }}
+  when: '"kube-proxy" not in kube_proxy_img.stdout'
+
+- name: Check The Kubelet Config File Whether Exist On All Worker Nodes
+  stat:
+    path: /etc/kubernetes/kubelet.conf
+  register: kubelet_conf
+
+- name: Send The Join-Node Script File To All Worker Nodes
+  copy:
+    src: /tmp/k8s-cert/join_node.sh
+    dest: /tmp/join_node.sh
+
+- name: Join Worker Nodes Into The K8S Cluster
+  shell: sh /tmp/join_node.sh
+  when: not kubelet_conf.stat.exists

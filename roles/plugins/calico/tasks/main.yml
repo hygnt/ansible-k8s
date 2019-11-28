@@ -1,0 +1,15 @@
+- name: Send Calico Yaml Template To The Master Node
+  template:
+    src: calico.yaml.j2
+    dest: /etc/kubernetes/calico.yaml
+
+- name: Install Calico Network Plugin For The K8S Cluster
+  shell: kubectl apply -f /etc/kubernetes/calico.yaml
+
+- name: 轮询等待 Calico Node Pod 运行
+  shell: kubectl get pod --all-namespaces | grep 'calico-node' | awk '{print $4}'
+  register: pod_status
+  until: "'Running' in pod_status.stdout"
+  retries: 16
+  delay: 6
+  ignore_errors: True
