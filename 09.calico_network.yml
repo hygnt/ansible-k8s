@@ -1,0 +1,7 @@
+- hosts: k8s-node
+  roles:
+  - plugins/calico-img
+
+- hosts: master1
+  roles:
+  - plugins/calico
