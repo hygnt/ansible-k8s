@@ -1,4 +1,4 @@
-- hosts: k8s-master:children
+- hosts: k8s-master
   roles:
   - plugins/nginx-ingress-img
 
