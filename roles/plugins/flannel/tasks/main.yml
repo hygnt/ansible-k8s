@@ -1,6 +1,6 @@
 - name: Send Flannel Yaml File To The Master Node
-  copy:
-    src: kube-flannel.yml
+  template:
+    src: kube-flannel.yaml.j2
     dest: /etc/kubernetes/kube-flannel.yaml
 
 - name: Install Flannel Network Plugin For The K8S Cluster
