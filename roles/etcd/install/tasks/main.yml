@@ -22,12 +22,14 @@
          --volume=/var/lib/etcd:/etcd-data --volume=/etc/kubernetes/pki/etcd:/etc/etcd/ssl \
          --restart=always --name etcd {{ k8s_img_repo }}/etcd:{{ etcd_ver }} \
          /usr/local/bin/etcd \
+         --client-cert-auth=true \
+         --trusted-ca-file=/etc/etcd/ssl/ca.pem \
          --cert-file=/etc/etcd/ssl/etcd.pem \
          --key-file=/etc/etcd/ssl/etcd-key.pem \
+         --peer-client-cert-auth=true \
+         --peer-trusted-ca-file=/etc/etcd/ssl/ca.pem \
          --peer-cert-file=/etc/etcd/ssl/etcd.pem \
          --peer-key-file=/etc/etcd/ssl/etcd-key.pem \
-         --trusted-ca-file=/etc/etcd/ssl/ca.pem \
-         --peer-trusted-ca-file=/etc/etcd/ssl/ca.pem \
          --data-dir=/etcd-data --name {{ etcd_name }} \
          --initial-advertise-peer-urls https://{{ ip_add }}:2380 --listen-peer-urls https://0.0.0.0:2380 \
          --advertise-client-urls https://{{ ip_add }}:2379 --listen-client-urls https://0.0.0.0:2379 \

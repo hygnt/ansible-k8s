@@ -1,0 +1,9 @@
+local_network: 192.168.9.0/24
+
+ntp_server: ntp6.aliyun.com
+
+local_server0: k8s-master1
+
+local_server1: k8s-master2
+
+local_server2: k8s-master3

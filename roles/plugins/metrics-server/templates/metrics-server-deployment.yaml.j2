@@ -27,6 +27,9 @@ spec:
       # mount in tmp so we can safely use from-scratch images and/or read-only containers
       - name: tmp-dir
         emptyDir: {}
+      - name: host-time
+        hostPath:
+          path: /etc/localtime
       containers:
       - name: metrics-server
         image: {{ k8s_img_repo }}/metrics-server-amd64:{{ metric_ver }}
@@ -49,5 +52,8 @@ spec:
         volumeMounts:
         - name: tmp-dir
           mountPath: /tmp
+        - name: host-time
+          mountPath: /etc/localtime
+          readOnly: true
       nodeSelector:
         beta.kubernetes.io/os: linux

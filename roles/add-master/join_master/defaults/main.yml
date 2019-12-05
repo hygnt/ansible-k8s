@@ -1,0 +1,1 @@
+CURRENT_HOST_IP: "{% if hostvars[inventory_hostname]['ansible_host'] is defined %}{{ hostvars[inventory_hostname]['ansible_host'] }}{% else %}{{ inventory_hostname }}{% endif %}"

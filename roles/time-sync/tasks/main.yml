@@ -1,0 +1,12 @@
+- name: Check The Chrony Config File Wether Exist For All Nodes
+  stat:
+    path: /etc/chrony.conf
+  register: chrony_conf
+
+- name: Include Modify System Time Synchronization For All Master Nodes
+  include_tasks: master_sync_tim.yml
+  when: chrony_conf.stat.exists and inventory_hostname in groups['k8s-master']
+
+- name: Include Modify System Time Synchronization For All Worker Nodes
+  include_tasks: worker_sync_tim.yml
+  when: chrony_conf.stat.exists and inventory_hostname in groups['k8s-worker']

@@ -1,0 +1,26 @@
+- name: Modify System Time Synchronization For All Worker Nodes
+  lineinfile:
+    path: /etc/chrony.conf
+    regexp: '0.centos'
+    line: 'server {{ local_server0 }} iburst'
+
+- lineinfile:
+    path: /etc/chrony.conf
+    regexp: '1.centos'
+    line: 'server {{ local_server1 }} iburst'
+
+- lineinfile:
+    path: /etc/chrony.conf
+    regexp: '2.centos'
+    line: 'server {{ local_server2 }} iburst'
+
+- lineinfile:
+    path: /etc/chrony.conf
+    regexp: 'centos'
+    state: absent
+
+- lineinfile:
+    path: /etc/chrony.conf
+    regexp: '#local'
+    line: 'local stratum 10'
+  notify: Restart Chrony Service

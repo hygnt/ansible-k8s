@@ -1,4 +1,10 @@
 apiVersion: kubeadm.k8s.io/v1beta2
+kind: InitConfiguration
+localAPIEndpoint:
+  advertiseAddress: {{ CURRENT_HOST_IP }}
+  bindPort: 6443
+---
+apiVersion: kubeadm.k8s.io/v1beta2
 kind: ClusterConfiguration
 imageRepository: {{ k8s_img_repo }}
 etcd:
@@ -11,8 +17,9 @@ etcd:
     certFile: "/etc/kubernetes/pki/etcd/etcd.pem"
     keyFile: "/etc/kubernetes/pki/etcd/etcd-key.pem"
 networking:
-  serviceSubnet: 10.96.0.0/12
+  dnsDomain: cluster.local
   podSubnet: 10.244.0.0/16
+  serviceSubnet: 10.96.0.0/12
 kubernetesVersion: v{{ kube_ver }}
 controlPlaneEndpoint: {{ vip }}:6443
 apiServer:
@@ -20,6 +27,10 @@ apiServer:
     enable-admission-plugins: NodeRestriction,DefaultStorageClass
     allow-privileged: "true"
     service-node-port-range: 20000-65535
+    apiserver-count: "3"
+    feature-gates: LocalStorageCapacityIsolation=true
+    runtime-config: batch/v2alpha1=true
+  timeoutForControlPlane: 4m0s
   certSANs:
   - {{ master1_ip }}
   - {{ master2_ip }}
@@ -34,9 +45,11 @@ apiServer:
 controllerManager:
   extraArgs:
     bind-address: 0.0.0.0
+    feature-gates: LocalStorageCapacityIsolation=true
 scheduler:
   extraArgs:
     bind-address: 0.0.0.0
+    feature-gates: LocalStorageCapacityIsolation=true
 ---
 apiVersion: kubelet.config.k8s.io/v1beta1
 kind: KubeletConfiguration
@@ -51,6 +64,16 @@ imageMinimumGCAge: 2m0s
 apiVersion: kubeproxy.config.k8s.io/v1alpha1
 kind: KubeProxyConfiguration
 bindAddress: 0.0.0.0
+clusterCIDR: 10.244.0.0/16
+configSyncPeriod: 15m0s
+conntrack:
+  maxPerCore: 32768
+  min: 131072
+  tcpCloseWaitTimeout: 1h0m0s
+  tcpEstablishedTimeout: 24h0m0s
+enableProfiling: false
+healthzBindAddress: 0.0.0.0:10256
+hostnameOverride: ""
 ipvs:
   excludeCIDRs: null
   minSyncPeriod: 0s
