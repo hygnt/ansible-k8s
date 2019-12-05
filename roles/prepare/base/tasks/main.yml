@@ -1,4 +1,4 @@
-- name: Config Host-File For K8S Cluster Nodes
+- name: Config Hosts File For K8S Cluster Nodes
   lineinfile:
     path: /etc/hosts
     regexp:
@@ -59,6 +59,7 @@
     - vim-enhanced
     - bash-completion
     - ntpdate
+    - chrony
     - wget
     - git
     - iproute

@@ -1,0 +1,17 @@
+- name: Create Docker Certificate Directory For All Nodes
+  file:
+    path: /etc/docker/certs.d/{{ localdomain }}
+    state: directory
+    mode: '0755'
+
+- name: Send Docker Certificate To All Nodes
+  copy:
+    src: /etc/docker/certs.d/{{ localdomain }}/{{ ca_cert }}
+    dest: /etc/docker/certs.d/{{ localdomain }}
+
+- name: Add IP-Domain In The Hosts File For All Nodes
+  lineinfile:
+    path: /etc/hosts
+    regexp:
+    insertafter:
+    line: "{{ registry_ip }}  {{ localdomain }}"

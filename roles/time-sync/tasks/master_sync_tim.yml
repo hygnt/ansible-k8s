@@ -1,0 +1,21 @@
+- name: Modify System Time Synchronization For All Master Nodes
+  lineinfile:
+    path: /etc/chrony.conf
+    regexp: '0.centos'
+    line: 'server {{ ntp_server }} iburst'
+ 
+- lineinfile:
+    path: /etc/chrony.conf
+    regexp: 'centos'
+    state: absent
+
+- lineinfile:
+    path: /etc/chrony.conf
+    regexp: '#allow'
+    line: 'allow {{ local_network }}'
+
+- lineinfile:
+    path: /etc/chrony.conf
+    regexp: '#local'
+    line: 'local stratum 10'
+  notify: Restart Chrony Service
