@@ -6,6 +6,7 @@ localAPIEndpoint:
 ---
 apiVersion: kubeadm.k8s.io/v1beta2
 kind: ClusterConfiguration
+clusterName: kubernetes
 imageRepository: {{ k8s_img_repo }}
 etcd:
   external:
@@ -29,7 +30,7 @@ apiServer:
     service-node-port-range: 20000-65535
     apiserver-count: "3"
     feature-gates: LocalStorageCapacityIsolation=true
-    runtime-config: batch/v2alpha1=true
+    runtime-config: api/all,settings.k8s.io/v1alpha1=true,batch/v2alpha1=true
   timeoutForControlPlane: 4m0s
   certSANs:
   - {{ master1_ip }}
@@ -46,14 +47,25 @@ controllerManager:
   extraArgs:
     bind-address: 0.0.0.0
     feature-gates: LocalStorageCapacityIsolation=true
+  extraVolumes:
+  - hostPath: /etc/localtime
+    mountPath: /etc/localtime
+    name: localtime
+    readOnly: true
 scheduler:
   extraArgs:
     bind-address: 0.0.0.0
     feature-gates: LocalStorageCapacityIsolation=true
+  extraVolumes:
+  - hostPath: /etc/localtime
+    mountPath: /etc/localtime
+    name: localtime
+    readOnly: true
 ---
 apiVersion: kubelet.config.k8s.io/v1beta1
 kind: KubeletConfiguration
 address: 0.0.0.0
+cgroupDriver: {{ docker_cgroup_driver.stdout }}
 systemReserved:
   cpu: "0.25"
   memory: 128Mi

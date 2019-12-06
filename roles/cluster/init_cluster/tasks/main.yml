@@ -21,17 +21,6 @@
          chown $(id -u):$(id -g) $HOME/.kube/config
   when: kube_admin_cfg.stat.isreg is not defined
 
-#- name: Modify Monitor Address For The K8S Cluster On The Master1 Node
-#  lineinfile:
-#    path: /etc/kubernetes/manifests/{{ item }}
-#    regexp: '    - --bind-address='
-#    line: '    - --bind-address=0.0.0.0'
-#  with_items:
-#  - kube-scheduler.yaml
-#  - kube-controller-manager.yaml
-#  notify:
-#  - Restart Kubelet Service On The Master1 Node
-
 - name: Fetch The K8S Cluster Admin Config File On The Master1 Node
   fetch:
     src: '{{ item }}'
