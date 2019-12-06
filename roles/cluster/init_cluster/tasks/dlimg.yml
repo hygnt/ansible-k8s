@@ -1,6 +1,6 @@
-#- name: Query Docker Cgroup Driver Value
-#  shell: docker info|grep 'Cgroup Driver'|awk '{print $3}'
-#  register: docker_cgroup_driver
+- name: Query Docker Cgroup Driver Value
+  shell: docker info|grep 'Cgroup Driver'|awk '{print $3}'
+  register: docker_cgroup_driver
 
 - name: Copy Kubeadm Config Template To Master1 Node
   template: src=kubeadm-config.yaml.j2 dest=/etc/kubernetes/kubeadm-config.yaml
