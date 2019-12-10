@@ -25,7 +25,7 @@ kubernetesVersion: v{{ kube_ver }}
 controlPlaneEndpoint: {{ vip }}:8443
 apiServer:
   extraArgs:
-    enable-admission-plugins: NodeRestriction,DefaultStorageClass
+    enable-admission-plugins: NodeRestriction,DefaultStorageClass,PodPreset
     allow-privileged: "true"
     service-node-port-range: 20000-65535
     apiserver-count: "3"
