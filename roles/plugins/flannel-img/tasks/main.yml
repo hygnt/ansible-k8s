@@ -1,7 +1,7 @@
 - name: Check Flannel Images Whether Exist For All K8S Nodes
-  shell: docker images|grep 'flannel' || echo 'not exist'
-  register: flannel_img
+  shell: docker images|grep 'flannel'|awk '{print $2}' || echo 'not exist'
+  register: flannel_img_ver
 
 - name: Pull Flannel Images If Images Not Exist For All K8S Nodes
   shell: curl -s https://zhangguanzhang.github.io/bash/pull.sh | bash -s -- {{ flannel_repo }}/flannel:{{ flannel_ver }}
-  when: '"flannel" not in flannel_img.stdout'
+  when: '"{{ flannel_ver }}" not in flannel_img_ver.stdout'

@@ -1,11 +1,11 @@
 - name: Check Calico Images Whether Exist For All K8S Nodes
-  shell: docker images|grep 'calico' || echo 'not exist'
-  register: calico_img
+  shell: docker images|grep 'calico'|awk '{print $2}' || echo 'not exist'
+  register: calico_img_ver
 
 - name: Pull Calico Images If Images Not Exist For All K8S Nodes
-  shell: docker pull {{ item }}:{{ calico_img_ver }}
+  shell: docker pull {{ item }}:{{ calico_ver }}
   with_items:
   - calico/node
   - calico/cni
   - calico/pod2daemon-flexvol
-  when: '"calico" not in calico_img.stdout'
+  when: '"{{ calico_ver }}" not in calico_img_ver.stdout'
