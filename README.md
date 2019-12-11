@@ -16,7 +16,7 @@ Etcd版本：v3.3.15-0
 
 K8S软件包版本：v1.16.3
 
-CNI网络插件：Calico_v3.10 或 Flannel_v0.11.0
+CNI网络插件：Calico_v3.10.2 或 Flannel_v0.11.0
 
 K8S-Dashboard版本：v2.0.0-beta6
 
