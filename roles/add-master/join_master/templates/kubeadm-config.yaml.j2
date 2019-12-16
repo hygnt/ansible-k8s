@@ -46,7 +46,8 @@ apiServer:
 controllerManager:
   extraArgs:
     bind-address: 0.0.0.0
-    feature-gates: LocalStorageCapacityIsolation=true
+    feature-gates: LocalStorageCapacityIsolation=true,RotateKubeletServerCertificate=true,RotateKubeletClientCertificate=true
+    experimental-cluster-signing-duration: 876000h0m0s
   extraVolumes:
   - hostPath: /etc/localtime
     mountPath: /etc/localtime
