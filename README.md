@@ -18,8 +18,10 @@ K8S软件包版本：v1.16.3
 
 CNI网络插件：Calico_v3.10.2 或 Flannel_v0.11.0
 
-K8S-Dashboard版本：v2.0.0-beta6
+K8S-Dashboard版本：v2.0.0-beta8
 
 Metrics-Server监控版本：v0.3.6
+
+CoreDNS版本：v1.6.2
 
 Nginx-Ingress-Controller版本：v0.26.1
