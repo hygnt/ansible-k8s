@@ -6,9 +6,6 @@
   - k8s-dashboard-rbac-admin.yaml
   - recommended.yaml
 
-- name: Apply K8S Dashboard RBAC For The K8S Cluster
-  shell: kubectl apply -f /etc/kubernetes/k8s-dashboard-rbac-admin.yaml
-
 - name: Check The K8S Dashboard Pod Whether Exist For The K8S Cluster
   shell: kubectl get pod --all-namespaces -o wide | grep 'kubernetes-dashboard' | awk '{print $4}'
   register: dashboard_pod_statu
@@ -24,3 +21,6 @@
   retries: 12
   delay: 5
   ignore_errors: True
+
+- name: Apply K8S Dashboard RBAC For The K8S Cluster
+  shell: kubectl apply -f /etc/kubernetes/k8s-dashboard-rbac-admin.yaml
