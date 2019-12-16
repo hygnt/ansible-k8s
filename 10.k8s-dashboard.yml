@@ -1,3 +1,0 @@
-- hosts: master1
-  roles:
-  - plugins/k8s-dashboard
