@@ -9,14 +9,15 @@
     - kubeadm-{{ kube_ver }}
     - kubectl-{{ kube_ver }}
     - kubelet-{{ kube_ver }}
-    - kubernetes-cni-{{ kube_cni_ver }}
-    state: present
+    - kubernetes-cni
+    state: latest
   when: kube_conf_path.stat.isdir is not defined
 
 - name: Enable Kubelet Service For All K8S Nodes
   systemd:
     name: kubelet
     enabled: yes
+  ignore_errors: True 
 
 - name: Configure Kubectl Command Line Auto Completion For All K8S Nodes
   shell: kubectl completion bash > /usr/share/bash-completion/completions/kubectl
