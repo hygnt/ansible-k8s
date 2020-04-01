@@ -1,2 +1,2 @@
 flannel_repo: quay.io/coreos
-flannel_ver: v0.11.0-amd64
+flannel_ver: v0.12.0-amd64
