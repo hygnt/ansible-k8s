@@ -17,6 +17,7 @@ Etcd版本：v3.3.15-0
 K8S软件包版本：v1.16.8
 
 CNI网络插件：Calico_v3.13.2 或 Flannel_v0.12.0
+注意：安装Calico网络插件时，集群最好能在单网卡或单网络环境下安装，否则容易出现Master节点和Worker节点的Pod网络不通
 
 K8S-Dashboard版本：v2.0.0-rc7
 
