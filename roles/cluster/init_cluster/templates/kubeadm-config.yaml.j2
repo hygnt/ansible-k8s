@@ -49,6 +49,8 @@ controllerManager:
     bind-address: 0.0.0.0
     feature-gates: LocalStorageCapacityIsolation=true,RotateKubeletServerCertificate=true,RotateKubeletClientCertificate=true
     experimental-cluster-signing-duration: 876000h0m0s
+    horizontal-pod-autoscaler-cpu-initialization-period: 60s
+    horizontal-pod-autoscaler-downscale-stabilization: 60s
   extraVolumes:
   - hostPath: /etc/localtime
     mountPath: /etc/localtime
