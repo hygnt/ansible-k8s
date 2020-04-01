@@ -33,13 +33,14 @@ spec:
       containers:
       - name: metrics-server
         image: {{ k8s_img_repo }}/metrics-server-amd64:{{ metric_ver }}
+        imagePullPolicy: IfNotPresent
         args:
           - --cert-dir=/tmp
           - --secure-port=4443
           - --logtostderr
           - --kubelet-insecure-tls
           - --metric-resolution=30s
-          - --kubelet-preferred-address-types=InternalIP,,ExternalIP,Hostname
+          - --kubelet-preferred-address-types=InternalIP,,ExternalIP,Hostname,InternalDNS,ExternalDNS
         ports:
         - name: main-port
           containerPort: 4443
@@ -48,7 +49,6 @@ spec:
           readOnlyRootFilesystem: true
           runAsNonRoot: true
           runAsUser: 1000
-        imagePullPolicy: Always
         volumeMounts:
         - name: tmp-dir
           mountPath: /tmp
@@ -56,5 +56,5 @@ spec:
           mountPath: /etc/localtime
           readOnly: true
       nodeSelector:
-        beta.kubernetes.io/os: linux
+        kubernetes.io/os: linux
         kubernetes.io/arch: "amd64"
