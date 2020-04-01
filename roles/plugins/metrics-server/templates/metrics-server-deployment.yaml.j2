@@ -40,7 +40,7 @@ spec:
           - --logtostderr
           - --kubelet-insecure-tls
           - --metric-resolution=30s
-          - --kubelet-preferred-address-types=InternalIP,,ExternalIP,Hostname
+          - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname,InternalDNS,ExternalDNS
         ports:
         - name: main-port
           containerPort: 4443
