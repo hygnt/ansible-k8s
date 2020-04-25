@@ -14,11 +14,11 @@ Docker版本：v18.09.9
 
 Etcd版本：v3.3.15-0
 
-K8S软件包版本：v1.16.8
+K8S软件包版本：v1.16.9
 
-CNI网络插件：Calico_v3.13.2 或 Flannel_v0.12.0
+CNI网络插件：Calico_v3.13.3 或 Flannel_v0.12.0
 
-K8S-Dashboard版本：v2.0.0-rc7
+K8S-Dashboard版本：v2.0.0
 
 Metrics-Server监控版本：v0.3.6
 
