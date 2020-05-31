@@ -1,32 +1,26 @@
 - name: Create The Metrics-Server Directory On The Master1 Node
   file:
-    path: /etc/kubernetes/metrics-server/base
+    path: /etc/kubernetes/metrics-server
     state: directory
     mode: '0755'
 
-- name: Copy Metrics-Server Kustomization File To The Master1 Node
-  copy:
-    src: "{{ item }}"
-    dest: /etc/kubernetes/metrics-server/base/{{ item }}
-  with_items:
-  - kustomization.yaml
-  - apiservice.yaml
-  - deployment.yaml
-  - pdb.yaml
-  - rbac.yaml
-  - service.yaml
-
-- name: Send Metrics-Server Kustomization Templates To The Master1 Node
+- name: Send Metrics-Server Config Templates To The Master1 Node
   template: src={{ item }}.j2 dest=/etc/kubernetes/metrics-server/{{ item }}
   with_items:
-  - kustomization.yaml
+  - aggregated-metrics-reader.yaml
+  - auth-delegator.yaml
+  - auth-reader.yaml
+  - metrics-apiservice.yaml
+  - metrics-server-deployment.yaml
+  - metrics-server-service.yaml
+  - resource-reader.yaml
 
 - name: Check The Metrics-Server Pod Whether Exist For The K8S Cluster
   shell: kubectl get pod --all-namespaces -o wide | grep 'metrics-server' | awk '{print $4}'
   register: metric_pod_statu
 
 - name: Deployment Metrics-Server For The K8S Cluster
-  shell: kubectl apply -k /etc/kubernetes/metrics-server/.
+  shell: kubectl apply -f /etc/kubernetes/metrics-server/.
   when: '"Running" not in metric_pod_statu.stdout'
 
 - name: 轮询等待 Metrics-Server Pod 运行
