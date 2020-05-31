@@ -5,12 +5,12 @@
     insertafter:
     line: "{{ item }}"
   with_items:
-  - 192.168.9.136  k8s-master1
-  - 192.168.9.137  k8s-master2
-  - 192.168.9.138  k8s-master3
-  - 192.168.9.151  k8s-worker1
-  - 192.168.9.152  k8s-worker2
-  - 192.168.9.153  k8s-worker3
+  - 192.168.1.132  k8s-master1
+  - 192.168.1.133  k8s-master2
+  - 192.168.1.134  k8s-master3
+  - 192.168.1.135  k8s-worker1
+  - 192.168.1.136  k8s-worker2
+  - 192.168.1.137  k8s-worker3
 
 - name: Ensure SELinux Is Set To Disabled Mode For All K8S Nodes
   lineinfile:
