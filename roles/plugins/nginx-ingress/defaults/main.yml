@@ -1,4 +1,4 @@
-nginx_ing_ctrl_ver: 0.30.0
+nginx_ing_ctrl_ver: 0.32.0
 
 master1: k8s-master1
 

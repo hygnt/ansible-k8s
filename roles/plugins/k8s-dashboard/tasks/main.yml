@@ -1,4 +1,4 @@
-- name: Send K8S Dashboard RBAC File To The Master1 Node
+- name: Copy K8S Dashboard RBAC File To The Master1 Node
   copy:
     src: "{{ item }}"
     dest: /etc/kubernetes/{{ item }}
