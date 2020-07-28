@@ -40,4 +40,4 @@ vip=192.168.1.66
 host_ip=192.168.1.132,192.168.1.133,192.168.1.134,192.168.1.66
 #k8s_img_repo=registry.aliyuncs.com/google_containers
 k8s_img_repo=registry.cn-shenzhen.aliyuncs.com/gck8s
-kube_ver=1.18.5
+kube_ver=1.18.6
