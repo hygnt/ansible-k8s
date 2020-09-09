@@ -25,7 +25,8 @@ kubernetesVersion: v{{ kube_ver }}
 controlPlaneEndpoint: {{ vip }}:8443
 apiServer:
   extraArgs:
-    enable-admission-plugins: NodeRestriction,DefaultStorageClass,PodPreset
+    authorization-mode: "Node,RBAC"
+    enable-admission-plugins: "NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeClaimResize,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,Priority,PodPreset"
     allow-privileged: "true"
     enable-aggregator-routing: "true"
     service-node-port-range: 20000-65535
@@ -39,6 +40,11 @@ apiServer:
   - {{ master3_ip }}
   - {{ vip }}
   - 127.0.0.1
+  - kubernetes
+  - kubernetes.default 
+  - kubernetes.default.svc 
+  - kubernetes.default.svc.cluster
+  - kubernetes.default.svc.cluster.local
   extraVolumes:
   - hostPath: /etc/localtime
     mountPath: /etc/localtime
@@ -48,7 +54,7 @@ controllerManager:
   extraArgs:
     bind-address: 0.0.0.0
     feature-gates: LocalStorageCapacityIsolation=true,RotateKubeletServerCertificate=true,RotateKubeletClientCertificate=true
-    experimental-cluster-signing-duration: 876000h0m0s
+    experimental-cluster-signing-duration: 876000h
     horizontal-pod-autoscaler-cpu-initialization-period: 60s
     horizontal-pod-autoscaler-downscale-stabilization: 60s
   extraVolumes:
