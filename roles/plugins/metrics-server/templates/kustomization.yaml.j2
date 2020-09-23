@@ -6,3 +6,5 @@ images:
   - name: gcr.io/k8s-staging-metrics-server/metrics-server
     newName: {{ k8s_img_repo }}/metrics-server
     newTag: {{ metric_ver }}
+patchesStrategicMerge:
+  - patch.yaml

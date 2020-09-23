@@ -20,6 +20,7 @@
   template: src={{ item }}.j2 dest=/etc/kubernetes/metrics-server/{{ item }}
   with_items:
   - kustomization.yaml
+  - patch.yaml
 
 - name: Check The Metrics-Server Pod Whether Exist For The K8S Cluster
   shell: kubectl get pod --all-namespaces -o wide | grep 'metrics-server' | awk '{print $4}'
