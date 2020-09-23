@@ -5,12 +5,12 @@
     insertafter:
     line: "{{ item }}"
   with_items:
-  - 192.168.1.132  k8s-master1
-  - 192.168.1.133  k8s-master2
-  - 192.168.1.134  k8s-master3
-  - 192.168.1.135  k8s-worker1
-  - 192.168.1.136  k8s-worker2
-  - 192.168.1.137  k8s-worker3
+  - 192.168.1.130  k8s-master1
+  - 192.168.1.131  k8s-master2
+  - 192.168.1.132  k8s-master3
+  - 192.168.1.133  k8s-worker1
+  - 192.168.1.134  k8s-worker2
+  - 192.168.1.135  k8s-worker3
 
 - name: Ensure SELinux Is Set To Disabled Mode For All K8S Nodes
   lineinfile:
@@ -18,11 +18,8 @@
     regexp: '^SELINUX='
     line: SELINUX=disabled
 
-- name: Modify Fstab File For Swap For All K8S Nodes
-  lineinfile:
-    path: /etc/fstab
-    regexp: '/dev/mapper/centos-swap'
-    line: '#/dev/mapper/centos-swap swap                    swap    defaults        0 0'
+- name: Modify Fstab File Disable Swap For All K8S Nodes
+  shell: sed -i '/swap/s/^/#/g' /etc/fstab
 
 - name: Copy Aliyun Repository Files To K8S Cluster Nodes
   copy: src={{ item }} dest=/etc/yum.repos.d/{{ item }}
