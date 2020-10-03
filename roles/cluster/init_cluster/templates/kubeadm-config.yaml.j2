@@ -30,7 +30,7 @@ apiServer:
     allow-privileged: "true"
     enable-aggregator-routing: "true"
     service-node-port-range: 20000-65535
-    apiserver-count: "3"
+    apiserver-count: "{{ groups['k8s-master']|length }}"
     feature-gates: LocalStorageCapacityIsolation=true
     runtime-config: api/all=true,settings.k8s.io/v1alpha1=true,batch/v2alpha1=true
   timeoutForControlPlane: 4m0s
@@ -76,10 +76,37 @@ apiVersion: kubelet.config.k8s.io/v1beta1
 kind: KubeletConfiguration
 address: 0.0.0.0
 cgroupDriver: {{ docker_cgroup_driver.stdout }}
-failSwapOn: true
+cgroupsPerQOS: true
+configMapAndSecretChangeDetectionStrategy: Watch
+containerLogMaxFiles: 5
+containerLogMaxSize: 10Mi
+contentType: application/vnd.kubernetes.protobuf
+cpuCFSQuota: true
+cpuCFSQuotaPeriod: 100ms
+cpuManagerPolicy: none
+cpuManagerReconcilePeriod: 10s
+enableControllerAttachDetach: true
+enableDebuggingHandlers: true
+enforceNodeAllocatable:
+- pods
+eventBurst: 10
+eventRecordQPS: 5
+evictionHard:
+  imagefs.available: {{ eviction_hard_imagefs_available }}
+  memory.available: {{ eviction_hard_memory_available }}
+  nodefs.available: {{ eviction_hard_nodefs_available }}
+  nodefs.inodesFree: {{ eviction_hard_nodefs_inodes_free }}
+kubeReserved:
+  cpu: {{ kube_cpu_reserved }}
+  memory: {{ kube_memory_reserved|regex_replace('Mi', 'M') }}
+{% if system_reserved_enabled is defined and system_reserved_enabled %}
 systemReserved:
-  cpu: "0.25"
-  memory: 128Mi
+  cpu: {{ system_cpu_reserved|default('500m') }}
+  memory: {{ system_memory_reserved|default('512M')|regex_replace('Mi', 'M') }}
+  ephemeral-storage: {{ system_ephemeral_storage_reserved|default('10Gi')|regex_replace('Gi', 'G') }}
+{% endif %}
+evictionPressureTransitionPeriod: 5m0s
+failSwapOn: true
 imageGCHighThresholdPercent: 85
 imageGCLowThresholdPercent: 80
 imageMinimumGCAge: 2m0s
