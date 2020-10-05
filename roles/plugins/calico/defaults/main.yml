@@ -1,1 +1,11 @@
+# 集群Pod_IP段
 pod_cidr: 10.244.0.0/16
+
+# 设置 Felix 日志级别(debug, info, warning, error)
+calico_felix_log_level: "warning"
+
+# 默认使用kube-proxy的 'iptables' 模式，可选 'ipvs' 模式(experimental)
+kube_proxy_mode: "ipvs"
+
+# NodePort端口范围
+kube_service_node_port_range: 20000-65535
