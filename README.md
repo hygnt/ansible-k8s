@@ -1,8 +1,8 @@
 - **项目特性：** 使用Ansible Playbook部署安装Kubernetes高可用集群，Node节点以及相关组件如下
 
-Master节点：k8s-master1、k8s-master2、k8s-master3
+  **Master节点：** k8s-master1、k8s-master2、k8s-master3
 
-Worker节点：k8s-worker1、k8s-worker2、k8s-worker3
+  **Worker节点：** k8s-worker1、k8s-worker2、k8s-worker3
 
 - **相关组件及支持：**
 
@@ -20,4 +20,4 @@ Worker节点：k8s-worker1、k8s-worker2、k8s-worker3
   | Metrics-Server     | v0.3.7                                         |
   | Ingress controller | Nginx-Ingress_v0.32.0                          |
 
-用法：ansible-playbook -i hosts **.yml
+  **用法：** ansible-playbook -i hosts **.yml
