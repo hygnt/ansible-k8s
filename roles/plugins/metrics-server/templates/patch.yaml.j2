@@ -9,7 +9,7 @@ spec:
     spec:
       containers:
         - name: metrics-server-nanny
-          image: registry.cn-shenzhen.aliyuncs.com/gck8s/addon-resizer:1.8.11
+          image: {{ k8s_img_repo }}/addon-resizer:1.8.11
           resources:
             limits:
               cpu: 40m
