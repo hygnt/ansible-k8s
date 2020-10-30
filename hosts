@@ -30,7 +30,7 @@ master3
 192.168.1.131 ansible_ssh_user=root ansible_ssh_pass=admin123 ip_add=192.168.1.131 etcd_name=etcd2
 192.168.1.132 ansible_ssh_user=root ansible_ssh_pass=admin123 ip_add=192.168.1.132 etcd_name=etcd3
 [etcd:vars]
-etcd_ver=3.4.3-0
+etcd_ver=3.4.13-0
 
 [all:vars]
 master1_ip=192.168.1.130
@@ -39,5 +39,5 @@ master3_ip=192.168.1.132
 vip=192.168.1.66
 host_ip=192.168.1.130,192.168.1.131,192.168.1.132,192.168.1.66
 #k8s_img_repo=registry.aliyuncs.com/google_containers
-k8s_img_repo=registry.cn-shenzhen.aliyuncs.com/gck8s
-kube_ver=1.18.9
+k8s_img_repo=registry.aliyuncs.com/gck8s
+kube_ver=1.19.3
