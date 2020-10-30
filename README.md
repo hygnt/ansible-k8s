@@ -12,7 +12,7 @@
   | HAproxy            | v2.0.0                                         |
   | Keepalived         | v1.4.5                                         |
   | Etcd               | v3.4.13-0                                      |
-  | Docker             | v19.03.12                                      |
+  | Docker             | v19.03.13                                      |
   | Kubernetes         | v1.19.3                                        |
   | CoreDNS            | v1.7.0                                         |
   | Network plugin     | Flannel_v0.12.0, **Calico_v3.16.4**            |
