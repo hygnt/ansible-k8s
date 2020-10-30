@@ -11,11 +11,11 @@
   | OS系统             | 建议使用 CentOS 7.x 或 RedHat 7.x 的最新版本   |
   | HAproxy            | v2.0.0                                         |
   | Keepalived         | v1.4.5                                         |
-  | Etcd               | v3.4.3-0                                       |
+  | Etcd               | v3.4.13-0                                      |
   | Docker             | v19.03.12                                      |
-  | Kubernetes         | v1.18.9                                        |
-  | CoreDNS            | v1.6.7                                         |
-  | Network plugin     | Flannel_v0.12.0, **Calico_v3.16.1**            |
+  | Kubernetes         | v1.19.3                                        |
+  | CoreDNS            | v1.7.0                                         |
+  | Network plugin     | Flannel_v0.12.0, **Calico_v3.16.4**            |
   | K8S-Dashboard      | v2.0.4                                         |
   | Metrics-Server     | v0.3.7                                         |
   | Ingress controller | Nginx-Ingress_v0.32.0                          |
