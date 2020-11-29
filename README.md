@@ -13,11 +13,11 @@
   | Keepalived         | v1.4.5                                         |
   | Etcd               | v3.4.13-0                                      |
   | Docker             | v19.03.13                                      |
-  | Kubernetes         | v1.19.3                                        |
+  | Kubernetes         | v1.19.4                                        |
   | CoreDNS            | v1.7.0                                         |
-  | Network plugin     | Flannel_v0.12.0, **Calico_v3.16.4**            |
+  | Network plugin     | Flannel_v0.12.0, **Calico_v3.17.0**            |
   | K8S-Dashboard      | v2.0.4                                         |
-  | Metrics-Server     | v0.3.7                                         |
+  | Metrics-Server     | v0.4.1                                         |
   | Ingress controller | Nginx-Ingress_v0.32.0                          |
 
   **用法：** ansible-playbook -i hosts **.yml
